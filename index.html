@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KU VetPath - Digital Pathology Lobby</title>
+    <style>
+        :root { --primary-color: #006b3f; --accent-color: #f2a900; } /* 건국대 상징색 */
+        body { font-family: 'Pretendard', 'Malgun Gothic', sans-serif; background-color: #f8f9fa; margin: 0; padding: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        /* 로그인 화면 */
+        #login-gate { margin-top: 15vh; text-align: center; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-top: 5px solid var(--primary-color); }
+        input[type="password"] { padding: 12px; width: 200px; border: 1px solid #ddd; border-radius: 5px; font-size: 16px; margin-bottom: 20px; outline-color: var(--primary-color); }
+        button { padding: 12px 25px; background: var(--primary-color); color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #004d2e; transform: translateY(-2px); }
+
+        /* 리스트 화면 */
+        #content { display: none; width: 90%; max-width: 1000px; padding: 40px 0; }
+        header { text-align: center; margin-bottom: 40px; }
+        h1 { color: var(--primary-color); margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        
+        /* 슬라이드 카드 디자인 */
+        .card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #eee; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-8px); box-shadow: 0 12px 20px rgba(0,0,0,0.1); border-color: var(--accent-color); }
+        .thumb { height: 160px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
+        .thumb::after { content: '🔬 View Slide'; position: absolute; background: rgba(0,0,0,0.6); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; font-weight: bold; }
+        .card:hover .thumb::after { opacity: 1; }
+        .info { padding: 15px; text-align: center; border-top: 1px solid #eee; }
+        .info h3 { margin: 0; font-size: 1.1em; color: #333; }
+        
+        .footer { margin-top: 50px; color: #888; font-size: 0.9em; text-align: center; padding-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <div id="login-gate">
+        <img src="https://www.konkuk.ac.kr/images/common/logo.png" alt="KU Logo" style="width:180px; margin-bottom:20px;">
+        <h2>건국대학교 수의병리학교실</h2>
+        <p>디지털 슬라이드 아카이브 접근을 위해<br>암호를 입력해주세요.</p>
+        <input type="password" id="pw" placeholder="Password" onkeypress="if(event.keyCode==13) check()"> <br>
+        <button onclick="check()">입장하기</button>
+    </div>
+
+    <div id="content">
+        <header>
+            <h1>🔬 Slide Archive</h1>
+            <p>Konkuk Univ. College of Veterinary Medicine | Pathologist: Nam-gyun Ki</p>
+        </header>
+
+        <div class="grid" id="slide-grid">
+            </div>
+
+        <div class="footer">
+            &copy; 2026 Konkuk University Veterinary Pathology Lab. All Rights Reserved.
+        </div>
+    </div>
+
+    <script>
+        // 1. 남균님이 주신 링크 리스트 (260326_2는 링크가 없어서 제외했습니다)
+        const slides = [
+            { name: "260326_1", url: "https://2601-cnp-1-5yqg5rb2p-michael041015-netizens-projects.vercel.app/" },
+            { name: "260326_3", url: "https://260326-3-2-yk6s.vercel.app/" },
+            { name: "260326_3-2", url: "https://260326-3-2.vercel.app/" },
+            { name: "260326_3-3", url: "https://260326-3-3.vercel.app/" },
+            { name: "260326_4", url: "https://260326-4.vercel.app/" },
+            { name: "260326_5", url: "https://260326-5.vercel.app/" },
+            { name: "-a_Cau2", url: "https://a-cau2.vercel.app/" },
+            { name: "2601CNP_1", url: "https://2601-cnp-1-r03jdca46-michael041015-netizens-projects.vercel.app/" },
+            { name: "2601CNP_2", url: "https://2601-cnp-1-mowc6ebvh-michael041015-netizens-projects.vercel.app/" },
+            { name: "2601CNP-4", url: "https://2601-cnp-4.vercel.app/" },
+            { name: "slide1", url: "https://slide1-nine.vercel.app/" },
+            { name: "slide2", url: "https://slide2-nine.vercel.app/" }
+        ];
+
+        // 2. 리스트 화면에 뿌리기
+        const grid = document.getElementById('slide-grid');
+        slides.forEach(s => {
+            // 썸네일 경로 규칙: Vercel주소/폴더명_files/0/0_0.jpg
+            // 슬라이드 이름과 폴더명이 같다고 가정하여 경로 생성
+            const thumbUrl = `${s.url}/${s.name}_files/0/0_0.jpg`;
+            
+            grid.innerHTML += `
+                <a href="${s.url}" class="card" target="_blank">
+                    <div class="thumb">
+                        <img src="${thumbUrl}" onerror="this.src='https://via.placeholder.com/300x160?text=No+Thumbnail'">
+                    </div>
+                    <div class="info">
+                        <h3>${s.name}</h3>
+                    </div>
+                </a>
+            `;
+        });
+
+        // 3. 비밀번호 체크 (2023)
+        function check() {
+            const val = document.getElementById('pw').value;
+            if(val === "2023") {
+                document.getElementById('login-gate').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } else {
+                alert("❌ 비밀번호가 올바르지 않습니다.");
+            }
+        }
+    </script>
+</body>
+</html>
