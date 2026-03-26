@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KU VetPath - Digital Pathology Archive</title>
+    <title>KU VetPath - Digital Pathology Archive (Debug Mode)</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --ku-green: #006b3f; --ku-gold: #f2a900; --bg-gray: #f4f7f6; }
@@ -11,34 +11,30 @@
         
         /* 🔒 보안 로그인 화면 */
         #login-gate { margin-top: 12vh; text-align: center; background: white; padding: 50px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 8px solid var(--ku-green); width: 100%; max-width: 400px; }
-        #login-gate h2 { color: var(--ku-green); margin-bottom: 10px; }
-        #login-gate p { color: #666; font-size: 0.95em; line-height: 1.6; margin-bottom: 25px; }
         input[type="password"] { padding: 14px; width: 80%; border: 2px solid #eee; border-radius: 8px; font-size: 16px; margin-bottom: 20px; outline: none; transition: 0.3s; }
-        input[type="password"]:focus { border-color: var(--ku-green); }
-        .btn-entry { padding: 14px 40px; background: var(--ku-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 17px; font-weight: bold; transition: 0.3s; width: 88%; }
-        .btn-entry:hover { background: #004d2e; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,77,46,0.3); }
+        .btn-entry { padding: 14px 40px; background: var(--ku-green); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 17px; font-weight: bold; width: 88%; }
 
-        /* 📋 리스트 화면 (입장 후) */
+        /* 📋 리스트 화면 */
         #content { display: none; width: 90%; max-width: 1100px; padding: 50px 0; animation: fadeIn 0.8s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         header { text-align: center; margin-bottom: 50px; }
-        header h1 { color: var(--ku-green); font-size: 2.2em; margin-bottom: 10px; letter-spacing: -1px; }
-        header p { color: #555; font-size: 1.1em; }
+        header h1 { color: var(--ku-green); font-size: 2.2em; margin-bottom: 10px; }
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
         
         /* 슬라이드 카드 */
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; border: 1px solid #efefef; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
-        .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.12); border-color: var(--ku-gold); }
-        .thumb { height: 170px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-        .thumb img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .card:hover .thumb img { scale: 1.1; }
-        .thumb::after { content: '🔬 SLIDE VIEW'; position: absolute; background: rgba(0,107,63,0.8); color: white; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; font-weight: bold; font-size: 1.1em; }
-        .card:hover .thumb::after { opacity: 1; }
-        .info { padding: 18px; text-align: center; border-top: 1px solid #f0f0f0; }
-        .info h3 { margin: 0; font-size: 1.15em; color: #222; font-weight: 700; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; text-decoration: none; color: inherit; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-10px); border-color: var(--ku-gold); }
+        .thumb { height: 170px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .thumb img { width: 100%; height: 100%; object-fit: cover; }
         
-        .footer { margin-top: 80px; color: #999; font-size: 0.85em; text-align: center; padding-bottom: 40px; border-top: 1px solid #ddd; padding-top: 30px; }
+        /* 🔧 디버그 정보 스타일 */
+        .debug-info { padding: 10px; font-size: 0.8em; color: #888; background: #fafafa; border-top: 1px solid #eee; word-break: break-all; text-align: left; }
+        .debug-status { font-weight: bold; margin-bottom: 5px; }
+        .status-ok { color: green; }
+        .status-err { color: red; }
+        
+        .footer { margin-top: 80px; text-align: center; padding: 30px 0; color: #999; border-top: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -53,26 +49,15 @@
 
     <div id="content">
         <header>
-            <h1>🔬 Slide Archive</h1>
-            <p>Konkuk Univ. College of Veterinary Medicine | Lab: Nam-gyun Ki</p>
+            <h1>🔬 Slide Archive (Debug)</h1>
+            <p>Konkuk Univ. | Lab: Nam-gyun Ki</p>
         </header>
-
-        <div class="grid" id="slide-grid">
-            </div>
-
-        <div class="footer">
-            &copy; 2026 Konkuk University Veterinary Pathology. All Rights Reserved.<br>
-            Designed for Digital Diagnostics Education.
-        </div>
+        <div class="grid" id="slide-grid"></div>
+        <div class="footer">&copy; 2026 Konkuk University.</div>
     </div>
 
     <script>
-        // -------------------------------------------------------------------------
-        // 1. 슬라이드 리스트 데이터 설정
-        // name: 화면에 표시될 슬라이드 이름
-        // url: Vercel 배포 주소
-        // folder: [중요] 해당 Vercel 서버 내 실제 타일 폴더 이름 (예: '2601CNP-1_files' 면 '2601CNP-1' 만 입력)
-        // -------------------------------------------------------------------------
+        // --- 슬라이드 데이터 (이 부분의 folder 값을 수정하셔야 합니다) ---
         const slides = [
             { name: "260326_1", url: "https://2601-cnp-1-5yqg5rb2p-michael041015-netizens-projects.vercel.app/", folder: "2601CNP-1" },
             { name: "260326_3", url: "https://260326-3-2-yk6s.vercel.app/", folder: "260326-3-2" },
@@ -88,25 +73,38 @@
             { name: "slide2", url: "https://slide2-nine.vercel.app/", folder: "slide2" }
         ];
 
-        // 2. 리스트 화면 구성 로직
+        // --- 무한 새로고침 해결 & 디버그 정보 추가 로직 ---
         const grid = document.getElementById('slide-grid');
+        const fragment = document.createDocumentFragment();
+
         slides.forEach(s => {
-            // 썸네일 경로: Vercel주소/folder이름_files/0/0_0.jpg
             const thumbUrl = `${s.url}/${s.folder}_files/0/0_0.jpg`;
             
-            grid.innerHTML += `
-                <a href="${s.url}" class="card" target="_blank">
-                    <div class="thumb">
-                        <img src="${thumbUrl}" onerror="this.src='https://via.placeholder.com/300x170?text=Scan+to+Thumbnail'">
-                    </div>
-                    <div class="info">
-                        <h3>${s.name}</h3>
-                    </div>
-                </a>
-            `;
-        });
+            const card = document.createElement('a');
+            card.href = s.url;
+            card.target = '_blank';
+            card.className = 'card';
 
-        // 3. 비밀번호 확인 로직 (2023)
+            // 이미지 로드 성공/실패 체크를 위한 변수
+            let isLoaded = false;
+
+            card.innerHTML = `
+                <div class="thumb">
+                    <img src="${thumbUrl}" 
+                         onload="document.getElementById('status-${s.name}').innerHTML='✅ URL 연결 성공'; document.getElementById('status-${s.name}').className='debug-status status-ok';"
+                         onerror="this.onerror=null; this.src='https://via.placeholder.com/300x170?text=Scan+Failed'; document.getElementById('status-${s.name}').innerHTML='❌ URL 연결 실패'; document.getElementById('status-${s.name}').className='debug-status status-err';">
+                </div>
+                <div class="debug-info">
+                    <div class="debug-status" id="status-${s.name}">⏳ 연결 확인 중...</div>
+                    <div style="font-weight:bold; color:#333; margin-bottom:3px;">표시 이름: ${s.name}</div>
+                    <strong>시도한 썸네일 경로:</strong><br>
+                    ${thumbUrl}
+                </div>
+            `;
+            fragment.appendChild(card);
+        });
+        grid.appendChild(fragment);
+
         function checkAccess() {
             const input = document.getElementById('pw-input').value;
             if(input === "2023") {
