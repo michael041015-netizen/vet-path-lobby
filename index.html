@@ -25,7 +25,7 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
         
         /* 슬라이드 카드 */
-        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; text-decoration: none; color: inherit; border: 1px solid #efefef; display: flex; flex-direction: column; }
+        .card { background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: 0.3s; text-decoration: none; color: inherit; border: 1px solid #efefef; display: flex; flex-direction: column; height: 100%; }
         .card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--ku-gold); }
         .thumb { height: 180px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
         .thumb img { width: 100%; height: 100%; object-fit: cover; }
@@ -52,15 +52,14 @@
             <p>Konkuk Univ. College of Veterinary Medicine | Lab: Nam-gyun Ki</p>
         </header>
 
-        <div class="grid" id="slide-grid">
+        <div id="slide-grid" class="grid">
             </div>
 
         <div class="footer">&copy; 2026 Konkuk University Veterinary Pathology.</div>
     </div>
 
     <script>
-        // --- 슬라이드 데이터 리스트 ---
-        // folder: '_files' 앞부분의 정확한 폴더 이름 (대소문자 구분 필수!)
+        // --- 1. 슬라이드 데이터 리스트 ---
         const slides = [
             { name: "260326_1", url: "https://2601-cnp-1-5yqg5rb2p-michael041015-netizens-projects.vercel.app/", folder: "2601CNP-1" },
             { name: "260326_3", url: "https://260326-3-2-yk6s.vercel.app/", folder: "260326-3-2" },
@@ -76,23 +75,38 @@
             { name: "slide2", url: "https://slide2-nine.vercel.app/", folder: "slide2" }
         ];
 
+        // --- 2. 카드 생성 로직 (10/0_0.jpeg 반영) ---
         const grid = document.getElementById('slide-grid');
         slides.forEach(s => {
-            // 썸네일 경로 조립
-            const thumbUrl = `${s.url}/${s.folder}_files/0/0_0.jpg`;
+            // 남균님이 확인하신 규칙: /folder_files/10/0_0.jpeg
+            const thumbUrl = `${s.url}/${s.folder}_files/10/0_0.jpeg`;
             
-            // 카드 HTML 생성
             grid.innerHTML += `
                 <a href="${s.url}" class="card" target="_blank">
                     <div class="thumb">
-                        <img src="${thumbUrl}" onerror="this.onerror=null; this.src='https://placehold.co/300x180/006b3f/ffffff?text=Digital+Slide';">
+                        <img src="${thumbUrl}" 
+                             onerror="handleImageError(this, '${s.url}', '${s.folder}')">
                     </div>
                     <div class="info">${s.name}</div>
                 </a>
             `;
         });
 
-        // 비밀번호 확인 (2023)
+        // --- 3. 이미지 로드 실패 시 보조 로직 ---
+        function handleImageError(img, url, folder) {
+            // 1차 시도 실패 시: .jpg 확장자로 재시도
+            if (!img.getAttribute('data-retry')) {
+                img.setAttribute('data-retry', 'true');
+                img.src = `${url}/${folder}_files/10/0_0.jpg`;
+            } 
+            // 2차 시도 실패 시: 기본 이미지 표시
+            else {
+                img.onerror = null;
+                img.src = 'https://placehold.co/300x180/006b3f/ffffff?text=Digital+Slide';
+            }
+        }
+
+        // --- 4. 비밀번호 확인 ---
         function checkAccess() {
             if(document.getElementById('pw-input').value === "2023") {
                 document.getElementById('login-gate').style.display = 'none';
